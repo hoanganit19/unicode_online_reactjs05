@@ -1,19 +1,13 @@
 import { useSelector, useDispatch } from "../store/utils/hook";
-
+import { increment, decrement } from "../store/actions/counterActions";
 export default function Counter() {
   const count = useSelector((state) => state.count);
   const dispatch = useDispatch();
   const handleIncrement = () => {
-    dispatch({
-      type: "counter/increment",
-      payload: 10,
-    });
+    dispatch(increment(10));
   };
   const handleDecrement = () => {
-    dispatch({
-      type: "counter/decrement",
-      payload: 5,
-    });
+    dispatch(decrement(5));
   };
   return (
     <div>
