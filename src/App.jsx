@@ -1,34 +1,24 @@
-import React from "react";
-import { useReducer } from "react";
-// import { useState } from "react";
+import React, { useContext } from "react";
+import { ProviderContext } from "./store/utils/Provider";
 
 export default function App() {
-  // const [count, setCount] = useState(0);
-
-  const counterReducer = (state, action) => {
-    switch (action.type) {
-      case "COUNTER_INCREMENT":
-        return { ...state, count: state.count + action.payload };
-        break;
-      default:
-        return state;
-    }
-  };
-
-  const initialState = {
-    count: 0,
-  };
-  const [state, dispatch] = useReducer(counterReducer, initialState);
-
+  const { state, dispatch } = useContext(ProviderContext);
   const handleIncrement = () => {
     dispatch({
-      type: "COUNTER_INCREMENT",
+      type: "counter/increment",
       payload: 10,
+    });
+  };
+  const handleDecrement = () => {
+    dispatch({
+      type: "counter/decrement",
+      payload: 5,
     });
   };
   return (
     <div>
       <h1>Count: {state.count}</h1>
+      <button onClick={handleDecrement}>-</button>
       <button onClick={handleIncrement}>+</button>
     </div>
   );
