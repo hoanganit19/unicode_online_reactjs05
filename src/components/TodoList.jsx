@@ -3,7 +3,9 @@ import { addTodo } from "../store/actions/todoActions";
 import { useState } from "react";
 export default function TodoList() {
   const [name, setName] = useState("");
-  const todoList = useSelector((state) => state.todoList);
+  const todoList = useSelector((state) => {
+    return state.todo.todoList;
+  });
   const dispatch = useDispatch();
   const handleAdd = (e) => {
     e.preventDefault();
