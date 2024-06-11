@@ -1,41 +1,54 @@
-import { useEffect, useLayoutEffect, useState } from "react";
-import Dashboard from "./components/Auth/Dashboard";
-import Login from "./components/Auth/Login";
+import { useCallback, useMemo, useState } from "react";
+import Content from "./components/Content";
 
 export default function App() {
-  const [isAutenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setLoading] = useState(true);
-  //Check login
-  // ==> Hợp lệ ==> Cập nhật state isAutenticated => true
-  // ==> Không hợp lệ ==> Cập nhật state isAutenticated => false
-  const updateAutentication = () => {
-    fetch(`https://jsonplaceholder.typicode.com/todos`)
-      .then((res) => {
-        setIsAuthenticated(true);
-      })
-      .finally(() => setLoading(false));
+  const [amount, setAmount] = useState("");
+  const [histories, setHistores] = useState([]);
+  const handleChangeAmount = (e) => {
+    setAmount(e.target.value);
   };
-  useEffect(() => {
-    updateAutentication();
-  }, []);
-  if (isLoading) return <h2>Loading...</h2>;
-  return <div>{isAutenticated ? <Dashboard /> : <Login />}</div>;
+  const handleAdd = (e) => {
+    e.preventDefault();
+    if (!amount) {
+      alert("Vui lòng nhập số tiền");
+      return;
+    }
+    setHistores([...histories, amount]);
+    setAmount("");
+  };
+  const amountTotal = useMemo(() => {
+    return histories.reduce((total, amount) => {
+      console.log("reduce");
+      return +total + +amount;
+    }, 0);
+    //Callback trong useMemo phải có return
+  }, [histories]);
+  const handleClearHistories = useCallback(() => {
+    setHistores([]);
+  }, []); //Khởi tạo hàm khi component được mount
+  console.log("app render");
+  return (
+    <div>
+      <form action="" onSubmit={handleAdd}>
+        <input
+          type="number"
+          placeholder="Số tiền"
+          value={amount}
+          onChange={handleChangeAmount}
+        />
+        <button>Thêm</button>
+      </form>
+      <h2>Lịch sử giao dịch: {amountTotal.toLocaleString("vi-VN")}</h2>
+      {histories.map((history, index) => (
+        <h4 key={index}>
+          #{index + 1}: {(+history).toLocaleString("vi-VN")}
+        </h4>
+      ))}
+      <Content histories={histories} onClick={handleClearHistories} />
+    </div>
+  );
 }
 
-//useEffect
-/*
-1. State thay đổi
-2. Component Re-render
-3. UI Update
-4. Cleanup
-5. Callback useEffect chạy
-*/
-
-//useLayoutEffect
-/*
-1. State thay đổi
-2. Component Re-render
-3. Cleanup
-4. Callback useLayoutEffect chạy
-5. UI Update
-*/
+//React.memo ==> HOC (Higher Order Component)
+//useMemo ==> Cache giá trị trong 1 component giữa các lần re-render
+//useCallback ==> Cache hàm trong 1 component giữa các lần re-render
