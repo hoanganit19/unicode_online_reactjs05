@@ -1,13 +1,16 @@
 import users from "../data/db.json";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useDeferredValue } from "react";
 export default function Users() {
-  const [keyword, setKeyword] = useState("");
+  let [keyword, setKeyword] = useState("");
   const [isPending, startTransition] = useTransition();
   const handleSearch = (e) => {
-    startTransition(() => {
-      setKeyword(e.target.value);
-    });
+    // startTransition(() => {
+    //   setKeyword(e.target.value);
+    // });
+    setKeyword(e.target.value);
   };
+
+  keyword = useDeferredValue(keyword);
 
   return (
     <div>
@@ -17,12 +20,11 @@ export default function Users() {
         placeholder="Search..."
         onChange={handleSearch}
       />
-      {isPending && <h3>Loading...</h3>}
-      {users.map(({ id, fullName }) => {
+      {users.map(({ id, fullName }, index) => {
         const pos = fullName.toLowerCase().indexOf(keyword.toLowerCase());
         if (keyword && pos !== -1) {
           return (
-            <h3 key={id}>
+            <h3 key={index}>
               {fullName.slice(0, pos)}
               <span style={{ background: "yellow" }}>
                 {fullName.slice(pos, pos + keyword.length)}
@@ -31,7 +33,7 @@ export default function Users() {
             </h3>
           );
         }
-        return <h3 key={id}>{fullName}</h3>;
+        return <h3 key={index}>{fullName}</h3>;
       })}
     </div>
   );
